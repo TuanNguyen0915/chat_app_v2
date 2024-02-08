@@ -20,8 +20,8 @@ const sendMessage = async (req, res) => {
       receiverId,
       message: req.body.message,
     })
-    
-    if(newMessage) {
+
+    if (newMessage) {
       conversation.messages.push(newMessage._id)
       await conversation.save()
     }
@@ -32,4 +32,22 @@ const sendMessage = async (req, res) => {
   }
 }
 
-export { sendMessage }
+const getMessages = async (req, res) => {
+  try {
+    const { id: userToChatId } = req.params
+    const senderId = req.user._id
+    const conversation = await Conversation.findOne({
+      participants: { $all: [senderId, userToChatId] },
+    }).populate('messages')
+    if (!conversation) {
+      res.status(200).json({success: true, messages: []})
+    } else {
+    return res.status(200).json({ success: true, messages: conversation.messages })
+
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export { sendMessage, getMessages }
