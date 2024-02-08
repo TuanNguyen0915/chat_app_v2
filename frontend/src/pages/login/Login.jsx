@@ -1,6 +1,7 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -49,10 +50,12 @@ const Login = () => {
             placeholder="Enter Password"
           />
         </div>
-        <p className="group mt-4 cursor-pointer text-lg hover:underline">
+        <p className="group mt-4 cursor-pointer text-xl "
+        onClick={()=>navigate('/signup')}
+        >
           {"Don't"} have an account?{" "}
-          <span className="text-gray-700 duration-300 group-hover:text-blue-500">
-            Register
+          <span className="text-gray-700 duration-300 group-hover:text-blue-700">
+            SignUp
           </span>
         </p>
         <button className="btn btn-block btn-lg mt-2">Login</button>
