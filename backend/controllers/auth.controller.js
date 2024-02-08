@@ -1,6 +1,10 @@
 import bcrypt from 'bcryptjs'
-
+import jsw from 'jsonwebtoken'
 import User from '../models/user.model.js'
+
+const generateToken = (id) => {
+  return jsw.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+}
 
 const signup = async (req, res) => {
   try {
@@ -9,18 +13,8 @@ const signup = async (req, res) => {
     }
     let user = await User.findOne({ username: req.body.username })
     if (user) {
-      return res.status(404).json({ success: false, message: 'Account is already exists' })
+      return res.status(404).json({ success: false, message: 'Account already exists' })
     }
-    // // random avatar
-    // if (req.body.gender === 'male') {
-    //   req.body.profilePhoto = req.body.profilePhoto
-    //     ? req.body.profilePhoto
-    //     : `https://avatar.iran.liara.run/public/boy?username=${req.body.username}`
-    // } else if (req.body.gender === 'female') {
-    //   req.body.profilePhoto = req.body.profilePhoto
-    //     ? req.body.profilePhoto
-    //     : `https://avatar.iran.liara.run/public/girl?username=${req.body.username}`
-    // }
     // hash password
     req.body.password = bcrypt.hashSync(req.body.password, 10)
 
@@ -34,11 +28,53 @@ const signup = async (req, res) => {
           ? `https://avatar.iran.liara.run/public/boy?username=${req.body.username}`
           : `https://avatar.iran.liara.run/public/girl?username=${req.body.username}`,
     })
+    // generate token
+    const token = generateToken(user._id)
+    res.cookie('token', token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV !== 'development',
+    })
     const { password, ...rest } = user._doc
-    res.status(201).json({ success: true, user: rest })
+    return res.status(201).json({ success: true, user: rest })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
   }
 }
 
-export { signup }
+const login = async (req, res) => {
+  try {
+    let user = await User.findOne({ username: req.body.username })
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Account doesn't already exists" })
+    }
+    const isPasswordMatching = bcrypt.compareSync(req.body.password, user.password)
+    if (!isPasswordMatching) {
+      return res.status(400).json({ success: false, message: 'Password is not correct' })
+    }
+    // generate Token
+    const token = generateToken(user._id)
+    res.cookie('token', token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV !== 'development',
+    })
+    const { password, ...rest } = user._doc
+    return res.status(201).json({ success: true, user: rest })
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+const logout = async (req, res) => {
+  try {
+    res.cookie('token', '', { maxAge: 0 })
+    return res.status(200).json({ status: true, message: 'User logout successfully' })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export { signup, login, logout }
