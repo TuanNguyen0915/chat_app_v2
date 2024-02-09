@@ -3,11 +3,15 @@ import SearchInput from "./SearchInput";
 import { BiLogOut } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../hooks/auth.hook";
+import { useAuthContext } from "../../context/AuthContext";
+
 const Sidebar = () => {
+  const { setAuthUser } = useAuthContext();
   const navigate = useNavigate();
   const handleLogOut = (e) => {
     e.preventDefault();
     logout();
+    setAuthUser(null);
     navigate("/login");
   };
   return (

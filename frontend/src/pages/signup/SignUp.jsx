@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../../hooks/auth.hook";
 import toast from "react-hot-toast";
+import { useAuthContext } from "../../context/AuthContext";
+
+
 const SignUp = () => {
+  const {setAuthUser} = useAuthContext()
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -26,9 +30,10 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = await signup(formData);
-    if (!user.success) {
+    if (user && !user.success) {
       toast.error(user.message);
-    } else {
+    } else if (user && user.success) {
+      setAuthUser(user)
       toast.success(user.message);
       navigate("/");
     }
