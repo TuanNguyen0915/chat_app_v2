@@ -5,28 +5,24 @@ import { useAuthContext } from "../../context/AuthContext";
 import { getAllUsers } from "../../hooks/conversation.hook";
 
 const Conversations = () => {
-  const [conversations, setConversations] = useState(null);
+  const [users, setUsers] = useState(null);
   const { authUser } = useAuthContext();
   useEffect(() => {
     const fetchData = async () => {
       const data = await getAllUsers(authUser.token);
-      setConversations(data.users);
+      setUsers(data.users);
     };
     fetchData();
   }, [authUser]);
 
   return (
     <div className="flex-1 overflow-auto">
-      {/* <ConversationCard />
-      <ConversationCard />
-      <ConversationCard />
-      <ConversationCard />
-      <ConversationCard />
-      <ConversationCard />
-      <ConversationCard />
-      <ConversationCard /> */}
-      {conversations?.map((conversation) => (
-        <ConversationCard key={conversation._id} user={conversation}/>
+      {users?.map((user, idx) => (
+        <ConversationCard
+          key={user._id}
+          user={user}
+          lastIdx={idx === users.length - 1}
+        />
       ))}
     </div>
   );
