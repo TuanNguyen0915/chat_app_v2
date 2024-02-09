@@ -40,6 +40,7 @@ const signup = async (formData) => {
 
     const res = await fetch(`${BASE_URL}/auth/signup`, {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
       },
@@ -48,7 +49,7 @@ const signup = async (formData) => {
     const data = await res.json();
     //send user-data to local storage
     if (data.success) {
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(data));
     }
     return data;
   } catch (error) {
@@ -65,6 +66,7 @@ const login = async (formData) => {
     }
     const res = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
       },
@@ -72,7 +74,7 @@ const login = async (formData) => {
     });
     const data = await res.json();
     if (data.success) {
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(data));
     }
     return data;
   } catch (error) {
