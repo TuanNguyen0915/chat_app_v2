@@ -11,8 +11,16 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(
+  cors(
+  //   {
+  //   origin: true,
+  //   credentials: true,
+  // }
+  )
+)
 app.use(cookieParser())
-app.use(cors())
 
 app.use('/api/auth', authRouter)
 app.use('/api/messages', messageRouter)

@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken'
 
 const checkAuth = async (req, res, next) => {
   try {
-    const token = req.cookies.token
+    let token = req.get('Authorization') || req.query.token || req.body.token
+    token = token.split(" ")[1]
     if (!token) {
       return res.status(401).json({ success: false, message: 'Unauthorized - No Token Provided' })
     }

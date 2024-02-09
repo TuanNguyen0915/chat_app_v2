@@ -37,7 +37,7 @@ const signup = async (req, res) => {
       secure: process.env.NODE_ENV !== 'development',
     })
     const { password, ...rest } = user._doc
-    return res.status(201).json({ success: true, message: `Welcome ${user.fullName}`, user: rest })
+    return res.status(201).json({ success: true, message: `Welcome ${user.fullName}`, user: rest, token })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
   }
@@ -62,7 +62,7 @@ const login = async (req, res) => {
       secure: process.env.NODE_ENV !== 'development',
     })
     const { password, ...rest } = user._doc
-    return res.status(201).json({ success: true, message: `Welcome back ${user.fullName}`, user: rest })
+    return res.status(201).json({ success: true, message: `Welcome back ${user.fullName}`, user: rest, token })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
   }
