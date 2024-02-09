@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signup } from "../../hooks/auth.hook";
+import toast from "react-hot-toast";
 const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -14,6 +16,24 @@ const SignUp = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleCheck = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setFormData({ ...formData, gender: value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const user = await signup(formData);
+    if (!user.success) {
+      toast.error(user.message);
+    } else {
+      toast.success(user.message);
+      navigate("/");
+    }
+  };
+
   return (
     <section className="flexCenter min-w-96 flex-col rounded-lg  bg-gray-200 bg-opacity-10 bg-clip-padding p-4 backdrop-blur-md backdrop-filter">
       <h1 className="p-4 text-center text-3xl font-semibold text-gray-300">
@@ -22,7 +42,10 @@ const SignUp = () => {
           ChatApp
         </span>
       </h1>
-      <form className="flexCenter w-full flex-col gap-4">
+      <form
+        className="flexCenter w-full flex-col gap-4"
+        onSubmit={handleSubmit}
+      >
         <div className="w-full">
           <label className="label h-[2rem]">
             <span className="text-lg">
@@ -91,11 +114,23 @@ const SignUp = () => {
         <div className="flex gap-10">
           <div className="flex items-center gap-4">
             <label className="label cursor-pointer text-lg">Male</label>
-            <input type="checkbox" className="checkbox border-slate-900" />
+            <input
+              name="gender"
+              type="radio"
+              className="radio border-slate-900"
+              onChange={handleCheck}
+              value="male"
+            />
           </div>
           <div className="flex items-center gap-4">
             <label className="label cursor-pointer text-lg">Female</label>
-            <input type="checkbox" className="checkbox border-slate-900" />
+            <input
+              name="gender"
+              type="radio"
+              className="radio border-slate-900"
+              onChange={handleCheck}
+              value="female"
+            />
           </div>
         </div>
         {/* NAVIGATE LOGIN */}
